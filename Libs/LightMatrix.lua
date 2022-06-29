@@ -354,17 +354,16 @@ LMatrix = {
 	end;
 	---@endsection
 
-	---@section createRotateMatrix
+	---@section newRotateMatrix
 	---@param self LMatrix
 	---@param roll number
 	---@param pitch number
 	---@param yaw number
 	---@return LMatrix
-	newRotateMatrix = function(self, pitch, roll, yaw)
-		roll = roll*2*math.pi
-		pitch = pitch*2*math.pi
+	newRotateMatrix = function(self, roll, pitch, yaw)
+		pitch = pitch * math.pi * 2
 		yaw = -yaw % 1 * math.pi * 2
-		roll = math.asin(math.sin(roll) / math.cos(pitch))
+		roll = math.asin(math.sin(roll * 2 * math.pi) / math.cos(pitch))
 		local sx, sy, sz, cx, cy, cz = math.sin(pitch), math.sin(yaw), math.sin(roll), math.cos(pitch), math.cos(yaw),math.cos(roll)
 		local rx = LMatrix:new(3, 3)
 		local ry = LMatrix:new(3, 3)
