@@ -256,7 +256,8 @@ LMatrix = {
 	---@endsection
 
 	---@section solve
-	--- Solve AX=Y for X, using LU decomposition.
+	--- Solve AX=Y for X with LU decomposition.
+	--- A(n x n), X(n x 1), Y(n x 1)
 	---@param self LMatrix
 	---@param y LMatrix
 	---@return LMatrix
