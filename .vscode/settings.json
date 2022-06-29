@@ -37,10 +37,10 @@
     ],
     "Lua.runtime.pathStrict": true,
     "Lua.workspace.library": [
-        "d:/SWLUA/Svalin Mk.1/Svalin-Mk.1/",
-        "c:/Users/thira/.vscode/extensions/nameouschangey.lifeboatapi-0.0.27/assets/lua/Common/",
-        "c:/Users/thira/.vscode/extensions/nameouschangey.lifeboatapi-0.0.27/assets/lua/Microcontroller/",
-        "d:/SWLUA/Svalin Mk.1/Svalin-Mk.1/_build/libs/"
+        "d:/Documents/StormWorks Lua/Svalin Mk.1/",
+        "c:/Users/ekxme/.vscode/extensions/nameouschangey.lifeboatapi-0.0.27/assets/lua/Common/",
+        "c:/Users/ekxme/.vscode/extensions/nameouschangey.lifeboatapi-0.0.27/assets/lua/Microcontroller/",
+        "d:/Documents/StormWorks Lua/Svalin Mk.1/_build/libs/"
     ],
     "lifeboatapi.stormworks.libs.gitLibraries": [
         {
