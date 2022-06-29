@@ -112,11 +112,3 @@ function onTick()
 	output.setNumber(2, AZIM)
 	output.setNumber(3, TICK)
 end
---[[
-angle, f = Balistic(0, 0, 0, -700, 120, -700, 0, 0, 0, 900, 0.005, 0, 0.8, 30, 0.001,false,nil)
-print("***DONE***")
---print("Times:           "..times)
-print("Elevation_Angle: " .. 180 * angle:get(2, 1) / math.pi)
-print("Azimuth_Angle:   " .. 180 * angle:get(3, 1) / math.pi)
-print("Time_to_Hit:     " .. angle:get(1, 1))
-]]

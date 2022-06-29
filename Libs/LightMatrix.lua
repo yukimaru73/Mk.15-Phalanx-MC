@@ -133,7 +133,7 @@ LMatrix = {
 	---@endsection
 
 	---@section mat
-	--- Calculate dot product of 2 matrix.
+	--- Calculate dot product of 2 matrix(A・B). B column must be equals to A row.
 	---@param self LMatrix
 	---@param mat LMatrix
 	---@return LMatrix
@@ -182,7 +182,7 @@ LMatrix = {
 	---@endsection
 
 	---@section inv
-	--- Calculate inverse of the Matrix (A^-1). Matrix must be a regular matrix.
+	--- Calculate inverse of the Matrix (A^-1). Matrix must be a regular matrix(det(A) not equals to 0).
 	---@param self LMatrix
 	---@return LMatrix
 	inv = function(self)
@@ -256,7 +256,7 @@ LMatrix = {
 	---@endsection
 
 	---@section solve
-	--- Solve A'X'=Y, using LU decomposition.
+	--- Solve AX=Y for X, using LU decomposition.
 	---@param self LMatrix
 	---@param y LMatrix
 	---@return LMatrix
