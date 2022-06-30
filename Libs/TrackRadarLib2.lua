@@ -24,13 +24,12 @@ TrackingRadar = {
 	---@param ch_out_fov number
 	---@return TrackingRadar
 	new = function(cls, ch_in_h, ch_in_v, ch_out_h, ch_out_v, ch_out_fov)
-		local obj = LifeBoatAPI.lb_copy(cls,
-			{ ch_in_h = ch_in_h,
-				ch_in_v = ch_in_v,
-				ch_out_h = ch_out_h,
-				ch_out_v = ch_out_v,
-				ch_out_fov = ch_out_fov })
-		return obj
+		return LifeBoatAPI.lb_copy(cls,
+		{ ch_in_h = ch_in_h,
+			ch_in_v = ch_in_v,
+			ch_out_h = ch_out_h,
+			ch_out_v = ch_out_v,
+			ch_out_fov = ch_out_fov })
 	end;
 
 	---@section isTracking
@@ -65,12 +64,13 @@ TrackingRadar = {
 	---@section getPOS
 	---@param self TrackingRadar
 	getPos = function(self)
-		if not self:isTracking() then return 0, 0, 0 end
-		local x, y, z, xz
-		y, xz = input.getNumber(self.ch_in_h + 2) * math.sin(input.getNumber(self.ch_in_h + 1) * 2 * math.pi),
-			input.getNumber(self.ch_in_h + 2) * math.cos(input.getNumber(self.ch_in_h + 1) * 2 * math.pi)
-		x = xz * math.cos(input.getNumber(self.ch_in_v + 1) * 2 * math.pi)
-		z = xz * math.sin(input.getNumber(self.ch_in_v + 1) * 2 * math.pi)
+		if not a:isTracking() then return 0, 0, 0 end
+		local x, y, z, xz, a
+		a = self
+		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
+		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
+		x = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		z = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
 		return x, y, z
 	end;
 	---@endsection
@@ -78,12 +78,19 @@ TrackingRadar = {
 	---@section trackingUpdate
 	---@param self TrackingRadar
 	trackingUpdate = function(self)
-		local azim, elev, dist_h
-		azim = input.getNumber(self.ch_in_v + 1)
-		elev = input.getNumber(self.ch_in_h + 1)
-		dist_h = input.getNumber(self.ch_in_h + 2)
-		self:setViewFromAngle(azim, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
-		self:setFOV(dist_h)
+		local azim, elev, dist_h, a
+		a = self
+		azim = input.getNumber(a.ch_in_v + 1)
+		elev = input.getNumber(a.ch_in_h + 1)
+		dist_h = input.getNumber(a.ch_in_h + 2)
+		if dist_h == 0 then return end
+		if input.getNumber(a.ch_in_h) ~= 0 then
+			output.setNumber(a.ch_out_h, azim)
+		end
+		if input.getNumber(a.ch_in_v) ~= 0 then
+			output.setNumber(a.ch_out_v, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
+		end
+		a:setFOV(dist_h)
 	end;
 	---@endsection
 

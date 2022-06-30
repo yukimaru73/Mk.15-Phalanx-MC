@@ -27,8 +27,7 @@ LMatrix = {
 				matmat[i][j] = 0
 			end
 		end
-		local mat = LifeBoatAPI.lb_copy(cls, { row = row, clm = clm, mat = matmat })
-		return mat
+		return LifeBoatAPI.lb_copy(cls, { row = row, clm = clm, mat = matmat })
 	end;
 
 	---@section get
