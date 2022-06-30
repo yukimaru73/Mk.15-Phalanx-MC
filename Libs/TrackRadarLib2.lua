@@ -84,10 +84,10 @@ TrackingRadar = {
 		elev = input.getNumber(a.ch_in_h + 1)
 		dist_h = input.getNumber(a.ch_in_h + 2)
 		if dist_h == 0 then return end
-		if input.getNumber(a.ch_in_h) ~= 0 then
+		if input.getNumber(a.ch_in_v) ~= 0 then
 			output.setNumber(a.ch_out_h, azim)
 		end
-		if input.getNumber(a.ch_in_v) ~= 0 then
+		if input.getNumber(a.ch_in_h) ~= 0 then
 			output.setNumber(a.ch_out_v, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
 		end
 		a:setFOV(dist_h)

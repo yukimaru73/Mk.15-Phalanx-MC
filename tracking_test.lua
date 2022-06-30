@@ -3,7 +3,7 @@ require("Libs.TrackRadarLib2")
 RADAR=TrackingRadar:new(9,4,6,5,4)
 
 function onTick()
-	
+	RADAR:trackingUpdate()
 end
 
 function getAngle(mat, offset) --a,e
