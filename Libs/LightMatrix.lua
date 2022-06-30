@@ -292,20 +292,20 @@ LMatrix = {
 				end
 			end
 		end
-		local x = LMatrix:new(1, 3)
+		local x = LMatrix:new(n, 1)
 		for i = 1, n do
-			x:set(1, i, y:get(1, p[i - 1] + 1))
+			x:set(i, 1, y:get(p[i - 1] + 1, 1))
 		end
 		for i = 2, n do
 			for j = 1, i - 1 do
-				x:set(1, i, x:get(1, i) - a:get(i, j) * x:get(1, j))
+				x:set(i, 1, x:get(i, 1) - a:get(i, j) * x:get(j, 1))
 			end
 		end
 		for i = n, 1, -1 do
 			for j = i + 1, n do
-				x:set(1, i, (x:get(1, i) - a:get(i, j) * x:get(1, j)))
+				x:set(i, 1, (x:get(i, 1) - a:get(i, j) * x:get(j, 1)))
 			end
-			x:set(1, i, x:get(1, i) / a:get(i, i))
+			x:set(i, 1, x:get(i, 1) / a:get(i, i))
 		end
 		return x
 	end;

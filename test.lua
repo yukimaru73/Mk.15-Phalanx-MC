@@ -15,7 +15,7 @@ function onTick()
 	mat:set(3,1,xz*math.cos(azim*math.pi/2))
 
 	local r = LMatrix:newRotateMatrix(roll,pitch,yaw)
-	local matr = r:solve(mat:transpose()):transpose()
+	local matr = r:solve(mat)
 	local ad = math.atan(matr:get(1,1),matr:get(3,1))
 	local xzd = math.sqrt(matr:get(3,1)^2+matr:get(1,1)^2)
 	local ed = math.atan(matr:get(2,1),xzd)

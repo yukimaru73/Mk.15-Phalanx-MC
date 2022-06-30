@@ -86,7 +86,7 @@ function Balistic(gX, gY, gZ, tX, tY, tZ, Vx, Vy, Vz, V0, d, L, dt, im, em, cont
 		end
 
 		local Q, R = J0:transpose():qr()
-		local srcp = p0:mul(-2):sub(R:transpose():solve(F0:transpose()))
+		local srcp = p0:mul(-2):sub(R:transpose():solve(F0))
 		local srcx = Q:dot(p0:transpose())
 		v0, p0 = v0:add(srcx:mul(dt)), p0:add(srcp:mul(dt))
 	end
