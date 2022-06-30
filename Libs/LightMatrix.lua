@@ -83,9 +83,6 @@ LMatrix = {
 	---@return LMatrix
 	add = function(self, mat)
 		local a = self
-		if a.clm ~= mat.clm or a.row ~= mat.row then
-			return nil
-		end
 		local amat = LMatrix:new(a.row, a.clm)
 		for ir = 1, a.row do
 			for ic = 1, a.clm do
@@ -103,9 +100,6 @@ LMatrix = {
 	---@return LMatrix
 	sub = function(self, mat)
 		local a = self
-		if a.clm ~= mat.clm or a.row ~= mat.row then
-			return nil
-		end
 		local amat = LMatrix:new(a.row, a.clm)
 		for ir = 1, a.row do
 			for ic = 1, a.clm do
@@ -154,7 +148,7 @@ LMatrix = {
 	---@section det
 	--- Calculate determinant of the Matrix. Matrix must be square.
 	---@param self LMatrix
-	---@return LMatrix
+	---@return number
 	det = function(self)
 		local n = self.row
 		local bmat = LMatrix:new(n, n)

@@ -82,8 +82,7 @@ TrackingRadar = {
 		azim = input.getNumber(self.ch_in_v + 1)
 		elev = input.getNumber(self.ch_in_h + 1)
 		dist_h = input.getNumber(self.ch_in_h + 2)
-		self:setViewFromAngle(azim, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi))
-			/ 2 / math.pi)
+		self:setViewFromAngle(azim, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
 		self:setFOV(dist_h)
 	end;
 	---@endsection
