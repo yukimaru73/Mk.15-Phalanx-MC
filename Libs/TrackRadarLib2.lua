@@ -64,9 +64,9 @@ TrackingRadar = {
 	---@section getPOS
 	---@param self TrackingRadar
 	getPos = function(self)
-		if not a:isTracking() then return 0, 0, 0 end
 		local x, y, z, xz, a
 		a = self
+		if not a:isTracking() then return 0, 0, 0 end
 		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		x = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
