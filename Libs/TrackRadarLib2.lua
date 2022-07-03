@@ -63,16 +63,17 @@ TrackingRadar = {
 
 	---@section getPos
 	---@param self TrackingRadar
+	---@return table
 	getPos = function(self)
 		local x, y, z, xz, a, ith, itv
 		a = self
 		ith,itv = a:isTracking()
-		if not (ith and itv) then return 0, 0, 0 end
+		if not (ith and itv) then return {0, 0, 0} end
 		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		x = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
 		z = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		return x, y, z
+		return {x, y, z}
 	end;
 	---@endsection
 

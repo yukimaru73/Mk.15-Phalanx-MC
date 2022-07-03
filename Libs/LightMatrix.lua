@@ -402,13 +402,12 @@ LMatrix = {
 
 	---@section getAngle
 	---@param self LMatrix
-	---@param offset number
-	---@return azimuth number, elevation number
-	getAngle = function(self, offset)
+	---@return number azimuth, number elevation
+	getAngle = function(self)
 	local azimuth, elevation, c
 	c=self
 	azimuth = math.atan(c:get(1, 1), c:get(3, 1))
-	elevation = math.atan(c:get(2, 1) - offset, math.sqrt(c:get(1, 1) ^ 2 + c:get(3, 1) ^ 2))
+	elevation = math.atan(c:get(2, 1), math.sqrt(c:get(1, 1) ^ 2 + c:get(3, 1) ^ 2))
 	return azimuth, elevation
 	end;
 	---@endsection
