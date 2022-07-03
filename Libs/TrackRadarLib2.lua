@@ -61,16 +61,17 @@ TrackingRadar = {
 	end;
 	---@endsection
 
-	---@section getPOS
+	---@section getPos
 	---@param self TrackingRadar
 	getPos = function(self)
-		local x, y, z, xz, a
+		local x, y, z, xz, a, ith, itv
 		a = self
-		if not a:isTracking() then return 0, 0, 0 end
+		ith,itv = a:isTracking()
+		if not (ith and itv) then return 0, 0, 0 end
 		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		x = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		z = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		x = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		z = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
 		return x, y, z
 	end;
 	---@endsection
@@ -78,19 +79,20 @@ TrackingRadar = {
 	---@section trackingUpdate
 	---@param self TrackingRadar
 	trackingUpdate = function(self)
-		local azim, elev, dist_h, a
+		local azim, elev, dist_h, dist_v, a
 		a = self
-		azim = input.getNumber(a.ch_in_v + 1)
-		elev = input.getNumber(a.ch_in_h + 1)
+		azim = input.getNumber(a.ch_in_v+1)
+		elev = input.getNumber(a.ch_in_h+1)
 		dist_h = input.getNumber(a.ch_in_h + 2)
-		if dist_h == 0 then return end
+		dist_v = input.getNumber(a.ch_in_v + 2)
 		if input.getNumber(a.ch_in_v) ~= 0 then
 			output.setNumber(a.ch_out_h, azim)
+			a:setFOV(dist_v)
 		end
 		if input.getNumber(a.ch_in_h) ~= 0 then
-			output.setNumber(a.ch_out_v, math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
+			output.setNumber(a.ch_out_v, -math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
+			a:setFOV(dist_h)
 		end
-		a:setFOV(dist_h)
 	end;
 	---@endsection
 
@@ -98,7 +100,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(2 / dist))
+		output.setNumber(self.ch_out_fov, math.atan(2, dist)/2/math.pi)
 	end;
 	---@endsection
 }

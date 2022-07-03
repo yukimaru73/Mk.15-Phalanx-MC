@@ -4,6 +4,8 @@ RADAR=TrackingRadar:new(7,4,6,5,4)
 
 function onTick()
 	RADAR:trackingUpdate()
+	local x,y,z = RADAR:getPos()
+	debug.log("TST/ X: "..x.." , Y: "..y.." , Z: "..z.." ,")
 end
 
 function getAngle(mat, offset) --a,e

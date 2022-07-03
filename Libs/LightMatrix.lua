@@ -381,5 +381,36 @@ LMatrix = {
 		return ry:dot(rx:dot(rz))
 	end;
 	---@endsection
+
+	---@section newFromArray
+	---@param self LMatrix
+	---@param array table
+	---@param row number
+	---@param clm number
+	---@return LMatrix
+	newFromArray = function(self, array, row, clm)
+		local mat = {}
+		for i = 1, row do
+			mat[i] = {}
+			for j = 1, clm do
+				mat[i][j] = array[(i-1)+j]
+			end
+		end
+		return LifeBoatAPI.lb_copy(self, { row = row, clm = clm, mat = mat })
+	end;
+	---@endsection
+
+	---@section getAngle
+	---@param self LMatrix
+	---@param offset number
+	---@return azimuth number, elevation number
+	getAngle = function(self, offset)
+	local azimuth, elevation, c
+	c=self
+	azimuth = math.atan(c:get(1, 1), c:get(3, 1))
+	elevation = math.atan(c:get(2, 1) - offset, math.sqrt(c:get(1, 1) ^ 2 + c:get(3, 1) ^ 2))
+	return azimuth, elevation
+	end;
+	---@endsection
 }
 ---@endsection LMatrix 1 LMATRIX
