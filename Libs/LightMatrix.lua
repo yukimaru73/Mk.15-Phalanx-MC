@@ -353,7 +353,7 @@ LMatrix = {
 	---@param pitch number
 	---@param yaw number
 	---@return LMatrix
-	newRotateMatrix = function(self, roll, pitch, yaw)
+	newRotateMatrix = function(self, pitch, roll, yaw)
 		pitch = pitch * math.pi * 2
 		yaw = -yaw % 1 * math.pi * 2
 		roll = math.asin(math.sin(roll * 2 * math.pi) / math.cos(pitch))

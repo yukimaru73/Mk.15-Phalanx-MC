@@ -14,8 +14,8 @@ function onTick()
 	end
 	RADAR:trackingUpdate()
 	local pos = LMatrix:newFromArray(RADAR:getPos(),3,1)
-	local rotationRadar = LMatrix:newRotateMatrix(params[15],params[14],params[17])
-	local rotationBase = LMatrix:newRotateMatrix(params[11],params[10],0)
+	local rotationRadar = LMatrix:newRotateMatrix(params[14],0,0)--substract pitch and yaw to calculate local rotation
+	local rotationBase = LMatrix:newRotateMatrix(params[10],params[11],params[12])--12 ? maybe not
 	local posout = rotationRadar:dot(pos):add(rotationRadar:dot(OFFSET_RADAR))
 	local a, e = rotationBase:solve(posout):getAngle()
 	local isTracking_h, isTracking_v = RADAR:isTracking()
