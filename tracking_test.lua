@@ -20,7 +20,7 @@ function onTick()
 	local rotationBase = LMatrix:newRotateMatrix(params[10], params[11], params[13])
 	local posout = rotationRadar:dot(pos):add(rotationRadar:dot(OFFSET_RADAR))
 	--debug.log("TST/ "..posout:get(1,1).." , "..posout:get(2,1).." , "..posout:get(3,1))
-	local a, e = rotationBase:solve(posout):getAngle()
+	local a, e = rotationBase:inv():dot(posout):getAngle()
 	local isTracking_h, isTracking_v = RADAR:isTracking()
 
 	if isTracking_h and isTracking_v then
