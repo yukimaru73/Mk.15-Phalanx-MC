@@ -63,18 +63,16 @@ TrackingRadar = {
 
 	---@section getPos
 	---@param self TrackingRadar
-	---@param offset_pitch number
-	---@param offset_yaw number
 	---@return table
-	getPos = function(self, offset_pitch, offset_yaw)
+	getPos = function(self)
 		local x, y, z, xz, a, ith, itv
 		a = self
 		ith, itv = a:isTracking()
 		if not (ith and itv) then return { 0, 0, 0 } end
-		y = input.getNumber(a.ch_in_h + 2) * math.sin((offset_pitch + input.getNumber(a.ch_in_h + 1)) * 2 * math.pi)
-		xz = input.getNumber(a.ch_in_h + 2) * math.cos((offset_pitch + input.getNumber(a.ch_in_h + 1)) * 2 * math.pi)
-		x = xz * math.sin((offset_yaw + input.getNumber(a.ch_in_v + 1)) * 2 * math.pi)
-		z = xz * math.cos((offset_yaw + input.getNumber(a.ch_in_v + 1)) * 2 * math.pi)
+		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
+		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
+		x = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		z = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
 		return { x, y, z }
 	end;
 	---@endsection
