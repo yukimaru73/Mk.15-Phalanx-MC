@@ -15,12 +15,11 @@ function onTick()
 	RADAR:trackingUpdate()
 	local pi2 = math.pi * 2
 	local Rpitch = (math.asin(math.sin(params[14] * pi2) / math.cos(params[15] * pi2)) - math.asin(math.sin(params[12] * pi2) / math.cos(params[15] * pi2))) / pi2
-
-	local pos = LMatrix:newFromArray(RADAR:getPos(), 3, 1)
+	local pos = LMatrix:newFromArray(RADAR:getPos(Rpitch,(params[13]-params[18]+1.5)%1-0.5), 3, 1)
 	local rotationRadar = LMatrix:newRotateMatrix(Rpitch, 0, (params[13]-params[18]+1.5)%1-0.5)
 	local rotationBase = LMatrix:newRotateMatrix(params[10], params[11], params[13])
 	local posout = rotationRadar:dot(pos):add(rotationRadar:dot(OFFSET_RADAR))
-	local a, e = rotationBase:solve(posout):getAngle()
+	local a, e = rotationBase:solve(pos):getAngle()
 	local isTracking_h, isTracking_v = RADAR:isTracking()
 
 	if isTracking_h and isTracking_v then

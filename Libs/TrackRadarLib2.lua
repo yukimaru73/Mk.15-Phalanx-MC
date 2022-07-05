@@ -25,11 +25,11 @@ TrackingRadar = {
 	---@return TrackingRadar
 	new = function(cls, ch_in_h, ch_in_v, ch_out_h, ch_out_v, ch_out_fov)
 		return LifeBoatAPI.lb_copy(cls,
-		{ ch_in_h = ch_in_h,
-			ch_in_v = ch_in_v,
-			ch_out_h = ch_out_h,
-			ch_out_v = ch_out_v,
-			ch_out_fov = ch_out_fov })
+			{ ch_in_h = ch_in_h,
+				ch_in_v = ch_in_v,
+				ch_out_h = ch_out_h,
+				ch_out_v = ch_out_v,
+				ch_out_fov = ch_out_fov })
 	end;
 
 	---@section isTracking
@@ -63,17 +63,19 @@ TrackingRadar = {
 
 	---@section getPos
 	---@param self TrackingRadar
+	---@param offset_pitch number
+	---@param offset_yaw number
 	---@return table
-	getPos = function(self)
+	getPos = function(self, offset_pitch, offset_yaw)
 		local x, y, z, xz, a, ith, itv
 		a = self
-		ith,itv = a:isTracking()
-		if not (ith and itv) then return {0, 0, 0} end
-		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		x = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		z = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		return {x, y, z}
+		ith, itv = a:isTracking()
+		if not (ith and itv) then return { 0, 0, 0 } end
+		y = input.getNumber(a.ch_in_h + 2) * math.sin((offset_pitch + input.getNumber(a.ch_in_h + 1)) * 2 * math.pi)
+		xz = input.getNumber(a.ch_in_h + 2) * math.cos((offset_pitch + input.getNumber(a.ch_in_h + 1)) * 2 * math.pi)
+		x = xz * math.sin((offset_yaw + input.getNumber(a.ch_in_v + 1)) * 2 * math.pi)
+		z = xz * math.cos((offset_yaw + input.getNumber(a.ch_in_v + 1)) * 2 * math.pi)
+		return { x, y, z }
 	end;
 	---@endsection
 
@@ -82,8 +84,8 @@ TrackingRadar = {
 	trackingUpdate = function(self)
 		local azim, elev, dist_h, dist_v, a
 		a = self
-		azim = input.getNumber(a.ch_in_v+1)
-		elev = input.getNumber(a.ch_in_h+1)
+		azim = input.getNumber(a.ch_in_v + 1)
+		elev = input.getNumber(a.ch_in_h + 1)
 		dist_h = input.getNumber(a.ch_in_h + 2)
 		dist_v = input.getNumber(a.ch_in_v + 2)
 		if input.getNumber(a.ch_in_v) ~= 0 then
@@ -91,7 +93,8 @@ TrackingRadar = {
 			a:setFOV(dist_v)
 		end
 		if input.getNumber(a.ch_in_h) ~= 0 then
-			output.setNumber(a.ch_out_v, -math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
+			output.setNumber(a.ch_out_v,
+				-math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
 			a:setFOV(dist_h)
 		end
 	end;
@@ -101,7 +104,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(2, dist)/2/math.pi)
+		output.setNumber(self.ch_out_fov, math.atan(2, dist) / 2 / math.pi)
 	end;
 	---@endsection
 }
