@@ -411,5 +411,17 @@ LMatrix = {
 	return azimuth, elevation
 	end;
 	---@endsection
+	
+	---@section getLength
+	---@param self LMatrix
+	getLength = function(self)
+		local a = self
+		local buf = 0
+		for i = 1, a.row do
+			buf = buf+ a:get(i,1)^2
+		end
+		return math.sqrt(buf)
+	end
+	---@endsection
 }
 ---@endsection LMatrix 1 LMATRIX
