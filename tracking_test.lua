@@ -25,6 +25,6 @@ function onTick()
 
 	if isTracking_h and isTracking_v then
 		output.setNumber(7, 2 * e / math.pi)
-		output.setNumber(8, PivotPID:update((-params[12] + a / pi2 + 1.5) % 1 - 0.5, 0))
+		output.setNumber(8, PivotPID:update((a / pi2 - params[12] + 1.5) % 1 - 0.5, 0))
 	end
 end
