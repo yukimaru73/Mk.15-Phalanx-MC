@@ -46,7 +46,7 @@ TrackingRadar = {
 	---@param y number
 	---@param z number
 	setViewFromPos = function(self, x, y, z)
-		output.setNumber(self.ch_out_h, math.atan(x, z))
+		output.setNumber(self.ch_out_h, math.atan(z, x))
 		output.setNumber(self.ch_out_v, math.atan(y - 0.5, math.sqrt(z ^ 2 * x ^ 2)))
 	end;
 	---@endsection
@@ -71,8 +71,8 @@ TrackingRadar = {
 		if not (ith and itv) then return { 0, 0, 0 } end
 		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
 		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		x = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		z = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		x = xz * math.cos(-input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		z = xz * math.sin(-input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
 		return { x, y, z }
 	end;
 	---@endsection
@@ -82,7 +82,7 @@ TrackingRadar = {
 	trackingUpdate = function(self)
 		local azim, elev, dist_h, dist_v, a
 		a = self
-		azim = input.getNumber(a.ch_in_v + 1)
+		azim = -input.getNumber(a.ch_in_v + 1)
 		elev = input.getNumber(a.ch_in_h + 1)
 		dist_h = input.getNumber(a.ch_in_h + 2)
 		dist_v = input.getNumber(a.ch_in_v + 2)

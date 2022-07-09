@@ -2,6 +2,7 @@ require("Libs.TrackRadarLib2")
 require("Libs.LightMatrix")
 require("LifeBoatAPI.Maths.LBMaths")
 require("Libs.PID")
+require("Libs.Quaternion")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_RADAR = LMatrix:newFromArray({ 0, 0.25, 0 }, 3, 1)
