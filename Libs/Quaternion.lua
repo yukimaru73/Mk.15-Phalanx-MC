@@ -86,10 +86,10 @@ Quaternion = {
 		local v = {1,0,0}
 		local q = cls:_newRotateQuaternion(yaw, { 0, 1, 0 })--yaw
 
-		v = q:_rotateVector(v)
+		v = q:_rotateVector({0,0,1})
 		q = cls:_newRotateQuaternion(pitch,v):_product(q)--pitch
 
-		v = q:_rotateVector(v)
+		v = q:_rotateVector({1,0,0})
 		q = cls:_newRotateQuaternion(roll,v):_product(q)--pitch
 		return q
 	end
