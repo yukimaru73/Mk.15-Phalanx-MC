@@ -26,11 +26,12 @@ function onTick()
 	end
 	if MODE == 0 and input.getNumber(20) ==1 then
 		SEARCH_RADAR_SW = true
-		if not input.getBool(1) then return end
-		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-		TARGET_R = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1,input.getNumber(3)})
-		TARGET_SUB = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1.25,input.getNumber(3)})
-		MODE = 1
+		if input.getBool(1) then
+			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
+			TARGET_R = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1,input.getNumber(3)})
+			TARGET_SUB = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1.25,input.getNumber(3)})
+			MODE = 1
+		end
 	end
 	if MODE == 1 then
 		local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
@@ -68,9 +69,9 @@ function onTick()
 			output.setNumber(8, PivotPID:update((a / pi2 - params[12] + 1.5) % 1 - 0.5, 0))
 		end
 	end
-
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
+	debug.log("TST/ "..MODE)
 end
 
 function setFOV(distance)
@@ -97,4 +98,10 @@ end
 
 function getXYZ(dist, azim, elev) --x,y,z
 	return {dist * math.cos(elev) * math.cos(azim),dist * math.sin(elev),dist * math.cos(elev) * math.sin(azim)}
+end
+function getAngle(vector)
+	local azimuth, elevation
+	azimuth = math.atan(vector[3], vector[1])
+	elevation = math.atan(vector[2], math.sqrt(vector[1] ^ 2 + vector[3] ^ 2))
+	return azimuth, elevation
 end
