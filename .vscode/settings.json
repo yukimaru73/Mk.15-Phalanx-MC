@@ -1,11 +1,6 @@
 {
     "lifeboatapi.stormworks.isMicrocontrollerProject": true,
     "lifeboatapi.stormworks.isAddonProject": false,
-    "Lua.diagnostics.disable": [
-        "lowercase-global",
-        "undefined-doc-name",
-        "return-type-mismatch"
-    ],
     "Lua.diagnostics.globals": [
         "__simulator",
         "print",
@@ -48,5 +43,8 @@
             "name": "LifeBoatAPI",
             "gitUrl": "https://github.com/nameouschangey/Stormworks_LifeBoatAPI_MC.git"
         }
+    ],
+    "Lua.diagnostics.disable": [
+        "lowercase-global"
     ]
 }

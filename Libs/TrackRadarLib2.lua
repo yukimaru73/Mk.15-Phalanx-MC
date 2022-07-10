@@ -34,9 +34,12 @@ TrackingRadar = {
 
 	---@section isTracking
 	---@param self TrackingRadar
-	---@return boolean horizontal, boolean vertical
+	---@return boolean horizontal, boolean vertical, boolean same
 	isTracking = function(self)
-		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0
+		local mass_h =input.getNumber(self.ch_in_h)*input.getNumber(self.ch_in_h+2)
+		local mass_v =input.getNumber(self.ch_in_v)*input.getNumber(self.ch_in_v+2)
+
+		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0, (mass_v-mass_h)<0.25
 	end;
 	---@endsection
 
@@ -87,12 +90,12 @@ TrackingRadar = {
 		dist_h = input.getNumber(a.ch_in_h + 2)
 		dist_v = input.getNumber(a.ch_in_v + 2)
 		if input.getNumber(a.ch_in_v) ~= 0 then
-			output.setNumber(a.ch_out_h, azim)
+			output.setNumber(a.ch_out_h, -azim)
 			a:setFOV(dist_v)
 		end
 		if input.getNumber(a.ch_in_h) ~= 0 then
 			output.setNumber(a.ch_out_v,
-				-math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
+				math.atan(dist_h * math.sin(elev * 2 * math.pi) - 0.5, dist_h * math.cos(elev * 2 * math.pi)) / 2 / math.pi)
 			a:setFOV(dist_h)
 		end
 	end;
@@ -102,7 +105,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(2, dist) / 2 / math.pi)
+		output.setNumber(self.ch_out_fov, math.atan(3, dist) / 2 / math.pi)
 	end;
 	---@endsection
 }
