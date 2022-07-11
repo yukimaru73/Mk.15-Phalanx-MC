@@ -4,12 +4,12 @@ require("Libs.PID")
 
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
-OFFSET_RADAR = {0, 0.25, 0}
-OFFSET_R_T_R = {0, 1, 0}
+OFFSET_TR_G = { 0, 0.25, 0 }
+OFFSET_SR_TR = { 0, 1, 0 }
+OFFSET_SR_G = { 0, 1.25, 0 }
 PivotPID = PID:new(4.5, 0, 0.5, 0.3)
 MODE = 0
-TARGET_R={0,0,0}
-TARGET_SUB={0,0,0}
+TARGET = { 0, 0, 0 }
 SEARCH_RADAR_SW = false
 BALISTIC_CALC = false
 
@@ -24,44 +24,50 @@ function onTick()
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
 	end
-	if MODE == 0 and input.getNumber(20) ==1 then
+	if MODE == 0 and input.getNumber(20) == 1 then
 		SEARCH_RADAR_SW = true
-		if not input.getBool(1) then return end
-		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-		TARGET_R = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1,input.getNumber(3)})
-		TARGET_SUB = rotationRadar:_rotateVector({input.getNumber(1),input.getNumber(2)+1.25,input.getNumber(3)})
-		MODE = 1
+		if input.getBool(1) then
+			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
+			local vec = { { input.getNumber(1), input.getNumber(2), input.getNumber(3) } }
+			TARGET = rotationRadar:_rotateVector(addVector(vec, OFFSET_SR_G, 1))
+			MODE = 1
+		end
 	end
 	if MODE == 1 then
 		local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-		local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_R)
-		local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_SUB)
-		RADAR:setViewFromPos(posradar[1],posradar[2],posradar[3])
-		local a, e = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(pospiv))
+
+		local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET)
+		posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
+		local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET)
+		pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_SR_G), -1)
+
+		RADAR:setViewFromPos(posradar[1], posradar[2], posradar[3])
+		local a, e = getAngle(pospiv)
 		
-		output.setNumber(7, 2 * e / math.pi)
-		output.setNumber(8, PivotPID:update((a / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 		local isTracking_h, isTracking_v, same = RADAR:isTracking()
 		if isTracking_h and isTracking_v and same then
 			MODE = 2
+		else
+			output.setNumber(7, 2 * e / math.pi)
+			output.setNumber(8, PivotPID:update((a / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 		end
 	end
-	if MODE ==2 then
+	if MODE == 2 then
 		RADAR:trackingUpdate()
 		local pi2 = math.pi * 2
 		local pos = RADAR:getPos()
-		pos[2]=pos[2] + 0.25
+		pos[2] = pos[2] + 0.25
 		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 		local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 		local posout = rotationRadar:_rotateVector(pos)
-		local offset = rotationBase:_rotateVector(OFFSET_RADAR)
+		local offset = rotationBase:_rotateVector(OFFSET_TR_G)
 		for i = 1, 3 do
 			posout[i] = posout[i] + offset[i]
 		end
 		local a, e = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 		local isTracking_h, isTracking_v, same = RADAR:isTracking()
-	
+
 		if isTracking_h and isTracking_v and same then
 			--debug.log("TST/ "..posout[1].." , "..posout[2].." , "..posout[3])
 			output.setNumber(7, 2 * e / math.pi)
@@ -96,5 +102,13 @@ function sign(value)
 end
 
 function getXYZ(dist, azim, elev) --x,y,z
-	return {dist * math.cos(elev) * math.cos(azim),dist * math.sin(elev),dist * math.cos(elev) * math.sin(azim)}
+	return { dist * math.cos(elev) * math.cos(azim), dist * math.sin(elev), dist * math.cos(elev) * math.sin(azim) }
+end
+
+function addVector(vecBase, vec2, scalar)
+	local vec = { 0, 0, 0 }
+	for i = 1, 3 do
+		vec[i] = vecBase[i] + vec2[i] * scalar
+	end
+	return vec
 end
