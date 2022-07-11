@@ -1,0 +1,7 @@
+---@section LIGHTMATRIXBOILERPLATE
+-- Author: TAK4129
+-- GitHub: https://github.com/yukimaru73
+-- Workshop: https://steamcommunity.com/profiles/76561198174258594/myworkshopfiles/?appid=573090
+--
+--- Developed using LifeBoatAPI - Stormworks Lua plugin for VSCode - https://code.visualstudio.com/download (search "Stormworks Lua with LifeboatAPI" extension)
+---@endsection

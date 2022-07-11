@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "Svalin Mk.1",
+			"path": "."
+		}
+	],
+	"settings": {
+		"problems.showCurrentInStatus": true
+	}
+}
