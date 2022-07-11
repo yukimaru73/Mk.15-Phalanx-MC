@@ -7,7 +7,7 @@ RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
 OFFSET_SR_TR = { 0, 1, 0 }
 OFFSET_SR_G = { 0, 1.25, 0 }
-PivotPID = PID:new(4.5, 0, 0.5, 0.3)
+PivotPID = PID:new(4.5, 0.01, 0.5, 0.3)
 MODE = 0
 TARGET = { 0, 0, 0 }
 SEARCH_RADAR_SW = false
@@ -30,7 +30,9 @@ function onTick()
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
 			TARGET = rotationRadar:_rotateVector(addVector(vec, OFFSET_SR_G, 1))
+			debug.log("TST/ X: "..TARGET[1]..", Y: "..TARGET[2]..", Z: "..TARGET[3])
 			MODE = 1
+			RADAR:setFOV(math.sqrt(vec[1]^2+vec[2]^2+vec[3]^2))
 		end
 	end
 	if MODE == 1 then
@@ -39,6 +41,7 @@ function onTick()
 
 		local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET)
 		posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
+		--debug.log("TST/ X: "..posradar[1]..", Y: "..posradar[2]..", Z: "..posradar[3])
 		local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET)
 		pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_SR_G), -1)
 
@@ -76,7 +79,7 @@ function onTick()
 	end
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
-	debug.log("TST/ "..MODE)
+	--debug.log("TST/ "..MODE)
 end
 
 function setFOV(distance)
@@ -99,10 +102,6 @@ end
 function sign(value)
 	if value < 0 then return -1 end
 	return 1
-end
-
-function getXYZ(dist, azim, elev) --x,y,z
-	return { dist * math.cos(elev) * math.cos(azim), dist * math.sin(elev), dist * math.cos(elev) * math.sin(azim) }
 end
 
 function addVector(vecBase, vec2, scalar)

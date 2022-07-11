@@ -49,8 +49,8 @@ TrackingRadar = {
 	---@param y number
 	---@param z number
 	setViewFromPos = function(self, x, y, z)
-		output.setNumber(self.ch_out_h, math.atan(x, z))
-		output.setNumber(self.ch_out_v, math.atan(y - 0.5, math.sqrt(x ^ 2 * z ^ 2)))
+		output.setNumber(self.ch_out_h, math.atan(z, x)/2/math.pi)
+		output.setNumber(self.ch_out_v, math.atan(y - 0.5, math.sqrt(x ^ 2 + z ^ 2))/2/math.pi)
 	end;
 	---@endsection
 
@@ -105,7 +105,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(3, dist) / 2 / math.pi)
+		output.setNumber(self.ch_out_fov, math.atan(20, dist) / 2 / math.pi)
 	end;
 	---@endsection
 }

@@ -21,5 +21,5 @@ function onTick()
 	output.setBool(1, f)
 end
 function getXYZ(dist, azim, elev) --x,y,z
-	return {dist * math.cos(elev) * math.cos(azim),dist * math.sin(elev),dist * math.cos(elev) * math.sin(azim)}
+	return {dist * math.cos(elev*2*math.pi) * math.cos(azim*2*math.pi),dist * math.sin(elev*2*math.pi),dist * math.cos(elev*2*math.pi) * math.sin(azim*2*math.pi)}
 end
