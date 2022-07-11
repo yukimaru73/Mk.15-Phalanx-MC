@@ -3,7 +3,7 @@ require("Libs.PID")
 require("Libs.Quaternion")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
-OFFSET_RADAR = { 0, 0.25, 0 }
+OFFSET_TR_G = { 0, 0.25, 0 }
 PivotPID = PID:new(4.5, 0, 0.5, 0.3)
 
 function onTick()
@@ -18,7 +18,7 @@ function onTick()
 	local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 	local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 	local posout = rotationRadar:_rotateVector(pos)
-	local offset = rotationBase:_rotateVector(OFFSET_RADAR)
+	local offset = rotationBase:_rotateVector(OFFSET_TR_G)
 	for i = 1, 3 do
 		posout[i] = posout[i] + offset[i]
 	end
