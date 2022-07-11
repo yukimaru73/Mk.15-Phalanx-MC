@@ -29,6 +29,7 @@ function onTick()
 		if input.getBool(1) then
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
+			TARGET = rotationRadar:_rotateVector(addVector(vec, OFFSET_SR_G, 1))
 			MODE = 1
 		end
 	end
@@ -43,7 +44,7 @@ function onTick()
 
 		RADAR:setViewFromPos(posradar[1], posradar[2], posradar[3])
 		local a, e = getAngle(pospiv)
-
+		
 		local isTracking_h, isTracking_v, same = RADAR:isTracking()
 		if isTracking_h and isTracking_v and same then
 			MODE = 2
