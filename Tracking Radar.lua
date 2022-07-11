@@ -30,7 +30,6 @@ function onTick()
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
 			TARGET = rotationRadar:_rotateVector(addVector(vec, OFFSET_SR_G, 1))
-			debug.log("TST/ X: "..TARGET[1]..", Y: "..TARGET[2]..", Z: "..TARGET[3])
 			MODE = 1
 			RADAR:setFOV(math.sqrt(vec[1]^2+vec[2]^2+vec[3]^2))
 		end
@@ -41,7 +40,6 @@ function onTick()
 
 		local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET)
 		posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
-		--debug.log("TST/ X: "..posradar[1]..", Y: "..posradar[2]..", Z: "..posradar[3])
 		local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET)
 		pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_SR_G), -1)
 
@@ -55,6 +53,7 @@ function onTick()
 			output.setNumber(7, 2 * e / math.pi)
 			output.setNumber(8, PivotPID:update((a / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 		end
+		RADAR:trackingUpdate()
 	end
 	if MODE == 2 then
 		RADAR:trackingUpdate()
@@ -72,14 +71,12 @@ function onTick()
 		local isTracking_h, isTracking_v, same = RADAR:isTracking()
 
 		if isTracking_h and isTracking_v and same then
-			--debug.log("TST/ "..posout[1].." , "..posout[2].." , "..posout[3])
 			output.setNumber(7, 2 * e / math.pi)
 			output.setNumber(8, PivotPID:update((a / pi2 - params[12] + 1.5) % 1 - 0.5, 0))
 		end
 	end
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
-	--debug.log("TST/ "..MODE)
 end
 
 function setFOV(distance)
