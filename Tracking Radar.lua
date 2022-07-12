@@ -94,13 +94,9 @@ function onTick()
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi/2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
 
-function setFOV(distance)
-	FOV = math.atan(2 / distance)
-end
-
 function getTilt(tilt, top)
 	if top < 0 then
-		tilt = tilt + sign(tilt) * 0.25
+		tilt = tilt + tilt/math.abs(tilt) * 0.25
 	end
 	return tilt
 end
@@ -109,11 +105,6 @@ function nequal(a, b, eps)
 	local flag = false
 	if a - b < eps then flag = true end
 	return flag
-end
-
-function sign(value)
-	if value < 0 then return -1 end
-	return 1
 end
 
 function addVector(vecBase, vec2, scalar)
