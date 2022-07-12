@@ -7,9 +7,11 @@ RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
 OFFSET_SR_TR = { 0, 1, 0 }
 OFFSET_SR_G = { 0, 1.25, 0 }
-PivotPID = PID:new(4.5, 0.01, 0.5, 0.3)
+PivotPID = PID:new(4.5, 0.08, 0.5, 0.3)
 MODE = 0
 TARGET = { 0, 0, 0 }
+
+PIVOT_V, HIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
 BALISTIC_CALC = false
 
@@ -17,6 +19,18 @@ BALISTIC_CALC = false
 -- MODE:1 -> Search Recieve
 -- MODE:2 -> Tracking
 -- MODE:3 -> Tracking Miss and Retrying
+
+-- input:1 -> Target X from SearchRadar
+-- input:2 -> Target Y from SearchRadar
+-- input:2 -> Target Z from SearchRadar
+
+-- output:1 -> Target X
+-- output:2 -> Target Y
+-- output:3 -> Target Z
+-- output:4 -> Target X Speed
+-- output:5 -> Target Y Speed
+-- output:5 -> Target Z Speed
+
 
 function onTick()
 	SEARCH_RADAR_SW = false
