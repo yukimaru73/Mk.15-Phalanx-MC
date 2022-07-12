@@ -7,11 +7,11 @@ RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
 OFFSET_SR_TR = { 0, 1, 0 }
 OFFSET_SR_G = { 0, 1.25, 0 }
-PivotPID = PID:new(4.5, 0.08, 0.5, 0.3)
+PivotPID = PID:new(9, 0.08, 0.5, 0.3)
 MODE = 0
 TARGET = { 0, 0, 0 }
 
-PIVOT_V, HIVOT_H = 0, 0
+PIVOT_V, PIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
 BALISTIC_CALC = false
 
@@ -64,14 +64,13 @@ function onTick()
 		if isTracking_h and isTracking_v and same then
 			MODE = 2
 		else
-			output.setNumber(7, 2 * e / math.pi)
-			output.setNumber(8, PivotPID:update((a / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
+			PIVOT_V = e
+			PIVOT_H = a
 		end
 		RADAR:trackingUpdate()
 	end
 	if MODE == 2 then
 		RADAR:trackingUpdate()
-		local pi2 = math.pi * 2
 		local pos = RADAR:getPos()
 		pos[2] = pos[2] + 0.25
 		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
@@ -85,12 +84,14 @@ function onTick()
 		local isTracking_h, isTracking_v, same = RADAR:isTracking()
 
 		if isTracking_h and isTracking_v and same then
-			output.setNumber(7, 2 * e / math.pi)
-			output.setNumber(8, PivotPID:update((a / pi2 - params[12] + 1.5) % 1 - 0.5, 0))
+			PIVOT_V = e
+			PIVOT_H = a
 		end
 	end
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
+	output.setNumber(7, 2 * PIVOT_V / math.pi)
+	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi/2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
 
 function setFOV(distance)
