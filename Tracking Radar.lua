@@ -39,7 +39,7 @@ function onTick()
 		params[i] = input.getNumber(i)
 	end
 	if input.getNumber(20) ~= 1 then
-		MODE, TARGET_MASS, MISSING_TIME, PIVOT_V, PIVOT_H  = 0,0,0,0,0
+		MODE, TARGET_MASS, MISSING_TIME, PIVOT_V, PIVOT_H  = 0, 0, 0, 0, 0
 		TARGET_POS = { 0, 0, 0 }
 		SEARCH_RADAR_SW, BALISTIC_CALC = false, false
 		goto out
