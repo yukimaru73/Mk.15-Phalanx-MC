@@ -9,6 +9,7 @@ PivotPID = PID:new(9, 0.08, 0.5, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_MASS = 0
+MISSING_TIME = 0
 
 PIVOT_V, PIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
@@ -37,14 +38,20 @@ function onTick()
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
 	end
-	if MODE == 0 and input.getNumber(20) == 1 then
+	if input.getNumber(20) ~= 1 then
+		MODE, TARGET_MASS, MISSING_TIME, PIVOT_V, PIVOT_H  = 0,0,0,0,0
+		TARGET_POS = { 0, 0, 0 }
+		SEARCH_RADAR_SW, BALISTIC_CALC = false, false
+		goto out
+	end
+	if MODE == 0 then
 		SEARCH_RADAR_SW = true
-		if input.getBool(1) then
+		if params[21] == 1 then
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
 			TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
 			MODE = 1
-			RADAR:setFOV(math.sqrt(vec[1]^2+vec[2]^2+vec[3]^2))
+			RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
 		end
 	end
 	if MODE == 1 then
@@ -55,52 +62,57 @@ function onTick()
 		else
 			local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-	
+
 			local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
 			local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -5)
-	
+
 			RADAR:setViewFromPos(posradar[1], posradar[2], posradar[3])
 			PIVOT_H, PIVOT_V = getAngle(pospiv)
+
+			MISSING_TIME = MISSING_TIME + 1
+			if MISSING_TIME > 60 then
+				MISSING_TIME, MODE, PIVOT_H, PIVOT_V = 0, 0, 0, 0
+			end
 		end
 		RADAR:trackingUpdate()
 	end
 	if MODE == 2 then
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-		if isTracking_h and isTracking_v and same then
-			
-		else
+		if isTracking_h and isTracking_v and same and nequal(mass, TARGET_MASS, 0.25) then
+			local pos = RADAR:getPos()
+			pos[2] = pos[2] + 0.25
+			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
+			local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
+			local posout = rotationRadar:_rotateVector(pos)
+			local offset = rotationBase:_rotateVector(OFFSET_TR_G)
+			for i = 1, 3 do
+				posout[i] = posout[i] + offset[i]
+			end
+			if input.getBool(2) then
 
+			else
+				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
+			end
+		else
+			MISSING_TIME = MISSING_TIME + 1
+			if MISSING_TIME > 60 then
+				MISSING_TIME, MODE, PIVOT_H, PIVOT_V = 0, 0, 0, 0
+			end
 		end
 		RADAR:trackingUpdate()
-		
-		local pos = RADAR:getPos()
-		pos[2] = pos[2] + 0.25
-		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-		local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
-		local posout = rotationRadar:_rotateVector(pos)
-		local offset = rotationBase:_rotateVector(OFFSET_TR_G)
-		for i = 1, 3 do
-			posout[i] = posout[i] + offset[i]
-		end
-		local a, e = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
-		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-
-		if isTracking_h and isTracking_v and same then
-			PIVOT_V = e
-			PIVOT_H = a
-		end
 	end
+	::out::
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
-	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi/2 - params[12] + 1.5) % 1 - 0.5, 0))
+	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
 
 function getTilt(tilt, top)
 	if top < 0 then
-		tilt = tilt + tilt/math.abs(tilt) * 0.25
+		tilt = tilt + tilt / math.abs(tilt) * 0.25
 	end
 	return tilt
 end
@@ -118,6 +130,7 @@ function addVector(vecBase, vec2, scalar)
 	end
 	return vec
 end
+
 function getAngle(vector)
 	local azimuth, elevation
 	azimuth = math.atan(vector[3], vector[1])

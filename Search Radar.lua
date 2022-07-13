@@ -18,7 +18,11 @@ function onTick()
 			output.setNumber(i, pos[i])
 		end
 	end
-	output.setBool(1, f)
+	if f then
+		output.setNumber(21,1)
+	else
+		output.setNumber(21,0)
+	end
 end
 function getXYZ(dist, azim, elev) --x,y,z
 	return {dist * math.cos(elev*2*math.pi) * math.cos(azim*2*math.pi),dist * math.sin(elev*2*math.pi),dist * math.cos(elev*2*math.pi) * math.sin(azim*2*math.pi)}
