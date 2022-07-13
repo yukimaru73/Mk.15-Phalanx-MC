@@ -5,11 +5,10 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-OFFSET_SR_TR = { 0, 1, 0 }
-OFFSET_SR_G = { 0, 1.25, 0 }
 PivotPID = PID:new(9, 0.08, 0.5, 0.3)
 MODE = 0
-TARGET = { 0, 0, 0 }
+TARGET_POS = { 0, 0, 0 }
+TARGET_MASS = 0
 
 PIVOT_V, PIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
@@ -43,34 +42,39 @@ function onTick()
 		if input.getBool(1) then
 			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
-			TARGET = rotationRadar:_rotateVector(addVector(vec, OFFSET_SR_G, 1))
+			TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
 			MODE = 1
 			RADAR:setFOV(math.sqrt(vec[1]^2+vec[2]^2+vec[3]^2))
 		end
 	end
 	if MODE == 1 then
-		local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
-		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-
-		local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET)
-		posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
-		local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET)
-		pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_SR_G), -1)
-
-		RADAR:setViewFromPos(posradar[1], posradar[2], posradar[3])
-		local a, e = getAngle(pospiv)
-		
-		local isTracking_h, isTracking_v, same = RADAR:isTracking()
+		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
 		if isTracking_h and isTracking_v and same then
+			TARGET_MASS = mass
 			MODE = 2
 		else
-			PIVOT_V = e
-			PIVOT_H = a
+			local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
+			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
+	
+			local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS)
+			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
+			local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
+			pospiv = addVector(pospiv, rotationBase:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -5)
+	
+			RADAR:setViewFromPos(posradar[1], posradar[2], posradar[3])
+			PIVOT_H, PIVOT_V = getAngle(pospiv)
 		end
 		RADAR:trackingUpdate()
 	end
 	if MODE == 2 then
+		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
+		if isTracking_h and isTracking_v and same then
+			
+		else
+
+		end
 		RADAR:trackingUpdate()
+		
 		local pos = RADAR:getPos()
 		pos[2] = pos[2] + 0.25
 		local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
@@ -81,7 +85,7 @@ function onTick()
 			posout[i] = posout[i] + offset[i]
 		end
 		local a, e = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
-		local isTracking_h, isTracking_v, same = RADAR:isTracking()
+		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
 
 		if isTracking_h and isTracking_v and same then
 			PIVOT_V = e

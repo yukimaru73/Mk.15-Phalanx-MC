@@ -34,12 +34,12 @@ TrackingRadar = {
 
 	---@section isTracking
 	---@param self TrackingRadar
-	---@return boolean horizontal, boolean vertical, boolean same
+	---@return boolean horizontal, boolean vertical, boolean same, number mass
 	isTracking = function(self)
 		local mass_h =input.getNumber(self.ch_in_h)*input.getNumber(self.ch_in_h+2)
 		local mass_v =input.getNumber(self.ch_in_v)*input.getNumber(self.ch_in_v+2)
 
-		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0, (mass_v-mass_h)<0.25
+		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0, (mass_v-mass_h)<0.25 , mass_h
 	end;
 	---@endsection
 
