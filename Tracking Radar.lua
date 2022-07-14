@@ -131,6 +131,8 @@ function onTick()
 	::out::
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
+	output.setBool(3, FIRE)
+	
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
