@@ -17,10 +17,10 @@ SEARCH_RADAR_SW = false
 BALISTIC_CALC = false
 FIRE = false
 
+--[[
 -- MODE:0 -> Stop
--- MODE:1 -> Search Recieve
+-- MODE:1 -> Search Recieve and Tracking Start
 -- MODE:2 -> Tracking
--- MODE:3 -> Tracking Miss and Retrying
 
 -- input:1 -> Target X from SearchRadar
 -- input:2 -> Target Y from SearchRadar
@@ -31,8 +31,12 @@ FIRE = false
 -- output:3 -> Target Z
 -- output:4 -> Target X Speed
 -- output:5 -> Target Y Speed
--- output:5 -> Target Z Speed
+-- output:6 -> Target Z Speed
 
+-- output:1 -> Search Radar Switch
+-- output:2 -> Balistic Calc Switch
+-- output:3 -> Gun Fire Switch
+]]
 
 function onTick()
 	SEARCH_RADAR_SW = false
@@ -132,7 +136,7 @@ function onTick()
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
 	output.setBool(3, FIRE)
-	
+
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
