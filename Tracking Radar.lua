@@ -8,12 +8,14 @@ OFFSET_TR_G = { 0, 0.25, 0 }
 PivotPID = PID:new(9, 0.08, 0.5, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
+TARGET_POS_LIST ={}
 TARGET_MASS = 0
 MISSING_TIME = 0
 
 PIVOT_V, PIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
 BALISTIC_CALC = false
+FIRE = false
 
 -- MODE:0 -> Stop
 -- MODE:1 -> Search Recieve
@@ -34,6 +36,8 @@ BALISTIC_CALC = false
 
 function onTick()
 	SEARCH_RADAR_SW = false
+	BALISTIC_CALC = false
+	FIRE = false
 	local params = {}
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
@@ -41,7 +45,6 @@ function onTick()
 	if input.getNumber(20) ~= 1 then
 		MODE, TARGET_MASS, MISSING_TIME, PIVOT_V, PIVOT_H  = 0, 0, 0, 0, 0
 		TARGET_POS = { 0, 0, 0 }
-		SEARCH_RADAR_SW, BALISTIC_CALC = false, false
 		goto out
 	end
 	if MODE == 0 then
@@ -90,8 +93,30 @@ function onTick()
 			for i = 1, 3 do
 				posout[i] = posout[i] + offset[i]
 			end
-			if input.getBool(2) then
 
+			table.insert(TARGET_POS_LIST,1,posout)
+			if #TARGET_POS_LIST > 5 then
+				table.remove(TARGET_POS_LIST,6)
+				local buf ={0,0,0}
+				for i = 1, 5 do
+					for j = 1, 3 do
+						buf[j] = buf[j] + TARGET_POS_LIST[i][j]
+					end
+				end
+				for i = 1, 3 do
+					output.setNumber(i,posout[i])
+					output.setNumber(i+3, buf[i] / 5)
+				end
+				BALISTIC_CALC = true
+			end
+			
+			if input.getBool(1) then
+				local face ={}
+				face[2] = math.sin(input.getNumber(22)) --y
+				local xz = math.cos(input.getNumber(22))
+				face[1] = xz * math.cos(input.getNumber(23)) --x
+				face[3] = xz * math.sin(input.getNumber(23)) --z
+				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(face))
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 			end

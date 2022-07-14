@@ -108,7 +108,7 @@ function onTick()
 		output.setBool(1, false)
 	end
 
-	output.setNumber(1, ELEV)
-	output.setNumber(2, AZIM)
-	output.setNumber(3, TICK)
+	output.setNumber(22, ELEV)
+	output.setNumber(23, AZIM)
+	output.setNumber(24, TICK)
 end
