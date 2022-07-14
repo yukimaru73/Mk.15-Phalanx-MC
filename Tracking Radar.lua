@@ -102,15 +102,16 @@ function onTick()
 			if #TARGET_POS_LIST > 5 then
 				table.remove(TARGET_POS_LIST, 6)
 				local buf = { 0, 0, 0 }
-				for i = 1, 5 do
+				for i = 1, 4 do
 					for j = 1, 3 do
-						buf[j] = buf[j] + TARGET_POS_LIST[i][j]
+						buf[j] = buf[j] + (TARGET_POS_LIST[i][j]-TARGET_POS_LIST[i+1][j])
 					end
 				end
 				for i = 1, 3 do
 					output.setNumber(i, posout[i])
 					output.setNumber(i + 3, buf[i] / 5)
 				end
+				debug.log("TST/ ,"..table.concat(buf,","))
 				BALISTIC_CALC = true
 			end
 
@@ -122,10 +123,8 @@ function onTick()
 				xz * math.sin(input.getNumber(23))
 				}
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(face))
-				debug.log("TST/ YES")
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
-				debug.log("TST/ NO")
 			end
 		else
 			MISSING_TIME = MISSING_TIME + 1
