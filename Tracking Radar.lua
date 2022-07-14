@@ -109,7 +109,7 @@ function onTick()
 				end
 				for i = 1, 3 do
 					output.setNumber(i, posout[i])
-					output.setNumber(i + 3, buf[i] / 5)
+					output.setNumber(i + 3, buf[i] / 4)
 				end
 				debug.log("TST/ ,"..table.concat(buf,","))
 				BALISTIC_CALC = true
