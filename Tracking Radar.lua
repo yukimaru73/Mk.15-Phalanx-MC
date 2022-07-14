@@ -5,7 +5,7 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(9, 0.08, 0.5, 0.3)
+PivotPID = PID:new(9, 0.15, 0.5, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
@@ -115,14 +115,17 @@ function onTick()
 			end
 
 			if input.getBool(1) then
-				local face = {}
-				face[2] = math.sin(input.getNumber(22)) --y
 				local xz = math.cos(input.getNumber(22))
-				face[1] = xz * math.cos(input.getNumber(23)) --x
-				face[3] = xz * math.sin(input.getNumber(23)) --z
+				local face = {
+				xz * math.cos(input.getNumber(23)),
+				math.sin(input.getNumber(22)),
+				xz * math.sin(input.getNumber(23))
+				}
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(face))
+				debug.log("TST/ YES")
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
+				debug.log("TST/ NO")
 			end
 		else
 			MISSING_TIME = MISSING_TIME + 1

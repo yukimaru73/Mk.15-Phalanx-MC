@@ -58,7 +58,7 @@ end
 ---@param em number
 ---@param cont boolean
 function Balistic(gX, gY, gZ, tX, tY, tZ, Vx, Vy, Vz, V0, d, L, dt, im, em, cont, x)
-	local p0 = LMatrix:new(1, 3)
+	local p0 = LMatrix:new(3, 1)
 	local v0 = LMatrix:new(3, 1)
 	local f = false
 	if cont then
@@ -67,7 +67,7 @@ function Balistic(gX, gY, gZ, tX, tY, tZ, Vx, Vy, Vz, V0, d, L, dt, im, em, cont
 		local pt = math.sqrt((tX - gX) ^ 2 + (tY - gY) ^ 2 + (tZ - gZ) ^ 2) / (V0 / 60)
 		v0:set(1, 1, pt)
 		v0:set(2, 1, math.atan(tY - gY + Vy * pt, math.sqrt((tX - gX + Vx * pt) ^ 2 + (tZ - gZ + Vz * pt) ^ 2)))
-		v0:set(3, 1, math.atan(tX - gX + Vx * pt, tZ - gZ + Vz * pt))
+		v0:set(3, 1, math.atan(tZ - gZ + Vz * pt,tX - gX + Vx * pt))
 	end
 	local F0 = LMatrix:new(3, 1)
 	local J0 = LMatrix:new(3, 3)
@@ -87,7 +87,7 @@ function Balistic(gX, gY, gZ, tX, tY, tZ, Vx, Vy, Vz, V0, d, L, dt, im, em, cont
 
 		local Q, R = J0:transpose():qr()
 		local srcp = p0:mul(-2):sub(R:transpose():solve(F0))
-		local srcx = Q:dot(p0:transpose())
+		local srcx = Q:dot(p0)
 		v0, p0 = v0:add(srcx:mul(dt)), p0:add(srcp:mul(dt))
 	end
 	return v0, f
@@ -103,6 +103,7 @@ function onTick()
 	VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(4), input.getNumber(5), input.getNumber(6), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.01, FLAG, VALMAT)
 	if VALMAT:get(1, 1) > 0 and FLAG then
 		TICK, ELEV, AZIM = VALMAT:get(1, 1), VALMAT:get(2, 1), VALMAT:get(3, 1)
+		--debug.log("TST/ "..TICK..","..ELEV..","..AZIM)
 		output.setBool(1, true)
 	else
 		output.setBool(1, false)
