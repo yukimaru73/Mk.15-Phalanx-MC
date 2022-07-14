@@ -23,17 +23,17 @@ function FJ(gX, gY, gZ, tX, tY, tZ, Vx, Vy, Vz, V0, d, L, pt, pth, pp, mf, mj)
 	local d1 = 1 - d
 	local logD60, dpt1, ptL, sth, cth, sp, cp = 60 * math.log(d1), d1 ^ pt - 1, pt + L, math.sin(pth), math.cos(pth), math.sin(pp), math.cos(pp)
 	mf:set(1, 1, ((tY - gY) + Vy * ptL) - (V0 * sth + .5 / d) * dpt1 / logD60 + pt / 120 / d)
-	mf:set(2, 1, ((tX - gX) + Vx * ptL) - (V0 * cth * sp) * dpt1 / logD60)
-	mf:set(3, 1, ((tZ - gZ) + Vz * ptL) - (V0 * cth * cp) * dpt1 / logD60)
+	mf:set(2, 1, ((tX - gX) + Vx * ptL) - V0 * cth * cp * dpt1 / logD60)
+	mf:set(3, 1, ((tZ - gZ) + Vz * ptL) - V0 * cth * sp * dpt1 / logD60)
 
 	mj:set(1, 1, Vy - (d1 ^ pt * (V0 * sth + 0.5 / d)) / 60 + 1 / 120 / d)
 	mj:set(1, 2, -(V0 * dpt1 * cth) / logD60)
-	mj:set(2, 1, Vx - (V0 * d1 ^ pt * cth * sp) / 60)
-	mj:set(2, 2, (V0 * dpt1 * sth * sp) / logD60)
-	mj:set(2, 3, -(V0 * dpt1 * cth * cp) / logD60)
-	mj:set(3, 1, Vz - (V0 * d1 ^ pt * cth * cp) / 60)
-	mj:set(3, 2, (V0 * dpt1 * sth * cp) / logD60)
-	mj:set(3, 3, (V0 * dpt1 * cth * sp) / logD60)
+	mj:set(2, 1, Vx - (V0 * d1 ^ pt * cth * cp) / 60)
+	mj:set(2, 2, (V0 * dpt1 * sth * cp) / logD60)
+	mj:set(2, 3, (V0 * dpt1 * cth * sp) / logD60)
+	mj:set(3, 1, Vz - (V0 * d1 ^ pt * cth * sp) / 60)
+	mj:set(3, 2, (V0 * dpt1 * sth * sp) / logD60)
+	mj:set(3, 3, -(V0 * dpt1 * cth * cp) / logD60)
 	return mf, mj
 end
 
@@ -100,7 +100,7 @@ function onTick()
 		FLAG = false
 		return
 	end
-	VALMAT, FLAG = Balistic(input.getNumber(1), input.getNumber(2), input.getNumber(3), input.getNumber(4), input.getNumber(5) , input.getNumber(6), input.getNumber(7), input.getNumber(8), input.getNumber(9), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.01, FLAG, VALMAT)
+	VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(4), input.getNumber(5), input.getNumber(6), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.01, FLAG, VALMAT)
 	if VALMAT:get(1, 1) > 0 and FLAG then
 		TICK, ELEV, AZIM = VALMAT:get(1, 1), VALMAT:get(2, 1), VALMAT:get(3, 1)
 		output.setBool(1, true)
