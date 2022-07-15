@@ -5,7 +5,7 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(9, 0.15, 0.5, 0.3)
+PivotPID = PID:new(5, 0.25, 0.5, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
@@ -43,12 +43,12 @@ function onTick()
 	BALISTIC_CALC = false
 	FIRE = false
 	local params = {}
+	local q_out = Quaternion:_new()
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
 	end
 	if input.getNumber(20) ~= 1 then
-		MODE, TARGET_MASS, MISSING_TIME, PIVOT_V, PIVOT_H = 0, 0, 0, 0, 0
-		TARGET_POS                                        = { 0, 0, 0 }
+		reset()
 		goto out
 	end
 	if MODE == 0 then
@@ -80,7 +80,7 @@ function onTick()
 
 			MISSING_TIME = MISSING_TIME + 1
 			if MISSING_TIME > 60 then
-				MISSING_TIME, MODE, PIVOT_H, PIVOT_V = 0, 0, 0, 0
+				reset()
 			end
 		end
 		RADAR:trackingUpdate()
@@ -104,32 +104,34 @@ function onTick()
 				local buf = { 0, 0, 0 }
 				for i = 1, 4 do
 					for j = 1, 3 do
-						buf[j] = buf[j] + (TARGET_POS_LIST[i][j]-TARGET_POS_LIST[i+1][j])
+						buf[j] = buf[j] + (TARGET_POS_LIST[i][j] - TARGET_POS_LIST[i + 1][j])
 					end
 				end
 				for i = 1, 3 do
 					output.setNumber(i, posout[i])
-					output.setNumber(i + 3, buf[i] / 4)
+					output.setNumber(i + 10, buf[i] / 4)
 				end
-				debug.log("TST/ ,"..table.concat(buf,","))
+				q_out = Quaternion:_new(rotationBase.x, rotationBase.y, rotationBase.z, rotationBase.w)
+				--debug.log("TST/ ,"..math.sqrt((buf[1]/4)^2+(buf[2]/4)^2+(buf[3]/4)^2)*60)
 				BALISTIC_CALC = true
 			end
 
 			if input.getBool(1) then
 				local xz = math.cos(input.getNumber(22))
 				local face = {
-				xz * math.cos(input.getNumber(23)),
-				math.sin(input.getNumber(22)),
-				xz * math.sin(input.getNumber(23))
+					xz * math.cos(input.getNumber(23)),
+					math.sin(input.getNumber(22)),
+					xz * math.sin(input.getNumber(23))
 				}
-				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(face))
+				PIVOT_H, PIVOT_V = getAngle(Quaternion:_new(input.getNumber(25), input.getNumber(26), input.getNumber(27),
+				input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 			end
 		else
 			MISSING_TIME = MISSING_TIME + 1
 			if MISSING_TIME > 60 then
-				MISSING_TIME, MODE, PIVOT_H, PIVOT_V = 0, 0, 0, 0
+				reset()
 			end
 		end
 		RADAR:trackingUpdate()
@@ -138,6 +140,10 @@ function onTick()
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
 	output.setBool(3, FIRE)
+	output.setNumber(14, q_out.x)
+	output.setNumber(15, q_out.y)
+	output.setNumber(16, q_out.z)
+	output.setNumber(17, q_out.w)
 
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
@@ -169,4 +175,17 @@ function getAngle(vector)
 	azimuth = math.atan(vector[3], vector[1])
 	elevation = math.atan(vector[2], math.sqrt(vector[1] ^ 2 + vector[3] ^ 2))
 	return azimuth, elevation
+end
+
+function reset()
+	MODE = 0
+	TARGET_POS = { 0, 0, 0 }
+	TARGET_POS_LIST = {}
+	TARGET_MASS = 0
+	MISSING_TIME = 0
+
+	PIVOT_V, PIVOT_H = 0, 0
+	SEARCH_RADAR_SW = false
+	BALISTIC_CALC = false
+	FIRE = false
 end

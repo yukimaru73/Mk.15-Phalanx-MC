@@ -98,9 +98,9 @@ VALMAT, TICK, ELEV, AZIM, FLAG = LMatrix:new(3,1), 0, 0, 0, false
 function onTick()
 	if not input.getBool(1) then
 		FLAG = false
-		return
+	else
+		VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(11), input.getNumber(12), input.getNumber(13), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.0001, FLAG, VALMAT)
 	end
-	VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(4), input.getNumber(5), input.getNumber(6), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.0001, FLAG, VALMAT)
 	if VALMAT:get(1, 1) > 0 and FLAG then
 		TICK, ELEV, AZIM = VALMAT:get(1, 1), VALMAT:get(2, 1), VALMAT:get(3, 1)
 		--debug.log("TST/ "..TICK..","..ELEV..","..AZIM)
@@ -108,8 +108,10 @@ function onTick()
 	else
 		output.setBool(1, false)
 	end
-
 	output.setNumber(22, ELEV)
 	output.setNumber(23, AZIM)
 	output.setNumber(24, TICK)
+	for i = 1, 4 do
+		output.setNumber(i+24,input.getNumber(i+13))
+	end
 end
