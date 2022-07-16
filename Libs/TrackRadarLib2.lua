@@ -105,7 +105,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(40, dist) / 2 / math.pi)
+		output.setNumber(self.ch_out_fov, math.atan(100, dist) / 2 / math.pi)
 	end;
 	---@endsection
 }

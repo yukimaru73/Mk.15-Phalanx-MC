@@ -81,7 +81,7 @@ Quaternion = {
 	---@return Quaternion
 	createPitchRollYawQuaternion = function(cls, pitch, roll, yaw)
 		pitch = 2 * pitch * math.pi
-		roll = 2 * roll * math.pi
+		roll = math.asin(math.sin(2 * roll * math.pi)/math.cos(pitch))
 		yaw = -2 * ((yaw + 1.75) % 1 - 0.5) * math.pi
 		local v = {1,0,0}
 		local q = cls:_newRotateQuaternion(yaw, { 0, 1, 0 })--yaw
@@ -90,7 +90,7 @@ Quaternion = {
 		q = cls:_newRotateQuaternion(pitch,v):_product(q)--pitch
 
 		v = q:_rotateVector({1,0,0})
-		q = cls:_newRotateQuaternion(roll,v):_product(q)--pitch
+		q = cls:_newRotateQuaternion(roll,v):_product(q)--roll
 		return q
 	end
 	---@endsection
