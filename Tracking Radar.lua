@@ -126,7 +126,7 @@ function onTick()
 				}
 				PIVOT_H, PIVOT_V = getAngle(Quaternion:_new(input.getNumber(25), input.getNumber(26), input.getNumber(27),
 				input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
-				if input.getNumber(24) < 50 then
+				if input.getNumber(24) < 100 then
 					FIRE = true
 				else
 					FIRE = false
