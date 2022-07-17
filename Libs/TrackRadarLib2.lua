@@ -68,14 +68,14 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@return table
 	getPos = function(self)
-		local x, y, z, xz, a, ith, itv
-		a = self
+		local x, y, z, xz, a, ith, itv, pi2
+		a, pi2  = self, math.pi * 2
 		ith, itv = a:isTracking()
 		if not (ith and itv) then return { 0, 0, 0 } end
-		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * 2 * math.pi)
-		x = xz * math.cos(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
-		z = xz * math.sin(input.getNumber(a.ch_in_v + 1) * 2 * math.pi)
+		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * pi2)
+		xz = input.getNumber(a.ch_in_h + 2) * math.cos(input.getNumber(a.ch_in_h + 1) * pi2)
+		x = xz * math.cos(input.getNumber(a.ch_in_v + 1) * pi2)
+		z = xz * math.sin(input.getNumber(a.ch_in_v + 1) * pi2)
 		return { x, y, z }
 	end;
 	---@endsection
@@ -105,7 +105,7 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@param dist number
 	setFOV = function(self, dist)
-		output.setNumber(self.ch_out_fov, math.atan(100, dist) / 2 / math.pi)
+		output.setNumber(self.ch_out_fov, math.atan(200, dist) / 2 / math.pi)
 	end;
 	---@endsection
 }

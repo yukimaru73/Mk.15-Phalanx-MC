@@ -103,7 +103,6 @@ function onTick()
 	end
 	if VALMAT:get(1, 1) > 0 and FLAG then
 		TICK, ELEV, AZIM = VALMAT:get(1, 1), VALMAT:get(2, 1), VALMAT:get(3, 1)
-		--debug.log("TST/ "..TICK..","..ELEV..","..AZIM)
 		output.setBool(1, true)
 	else
 		output.setBool(1, false)
@@ -111,7 +110,9 @@ function onTick()
 	output.setNumber(22, ELEV)
 	output.setNumber(23, AZIM)
 	output.setNumber(24, TICK)
+
 	for i = 1, 4 do
 		output.setNumber(i+24,input.getNumber(i+13))
 	end
+
 end

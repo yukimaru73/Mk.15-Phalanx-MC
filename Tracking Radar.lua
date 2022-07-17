@@ -11,6 +11,7 @@ TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
 TARGET_MASS = 0
 MISSING_TIME = 0
+FIRE= false
 
 PIVOT_V, PIVOT_H = 0, 0
 SEARCH_RADAR_SW = false
@@ -125,6 +126,11 @@ function onTick()
 				}
 				PIVOT_H, PIVOT_V = getAngle(Quaternion:_new(input.getNumber(25), input.getNumber(26), input.getNumber(27),
 				input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
+				if input.getNumber(24) < 50 then
+					FIRE = true
+				else
+					FIRE = false
+				end
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 			end
@@ -139,7 +145,7 @@ function onTick()
 	::out::
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
-	output.setBool(3, FIRE)
+	output.setBool(10, FIRE)
 	output.setNumber(14, q_out.x)
 	output.setNumber(15, q_out.y)
 	output.setNumber(16, q_out.z)
