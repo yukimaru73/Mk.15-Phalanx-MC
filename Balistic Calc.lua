@@ -99,7 +99,7 @@ function onTick()
 	if not input.getBool(1) then
 		FLAG = false
 	else
-		VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(11), input.getNumber(12), input.getNumber(13), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.0001, FLAG, VALMAT)
+		VALMAT, FLAG = Balistic(0, 0, 0, input.getNumber(1), input.getNumber(2) , input.getNumber(3), input.getNumber(11), input.getNumber(12), input.getNumber(13), property.getNumber("Muzzle Velocity"), property.getNumber("Air Resistance"), property.getNumber("Timelag"), 0.7, 30, 0.01, FLAG, VALMAT)
 	end
 	if VALMAT:get(1, 1) > 0 and FLAG then
 		TICK, ELEV, AZIM = VALMAT:get(1, 1), VALMAT:get(2, 1), VALMAT:get(3, 1)
