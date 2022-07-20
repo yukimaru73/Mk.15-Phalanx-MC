@@ -129,9 +129,6 @@ function onTick()
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 			end
-			if math.abs(PIVOT_H) > property.getNumber("MaxYaw") then
-				reset()
-			end
 		else
 			MISSING_TIME = MISSING_TIME + 1
 			if MISSING_TIME > 60 then
@@ -141,6 +138,9 @@ function onTick()
 		RADAR:trackingUpdate()
 	end
 	::out::
+	if math.abs(PIVOT_H) / 2 / math.pi > property.getNumber("MaxYaw") then
+		reset()
+	end
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
 	output.setBool(10, FIRE)
