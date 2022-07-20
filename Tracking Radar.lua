@@ -5,7 +5,7 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(5, 0.45, 0.2, 0.3)
+PivotPID = PID:new(6, 0.5, 0.3, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
