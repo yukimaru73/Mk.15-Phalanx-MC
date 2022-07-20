@@ -14,9 +14,6 @@ MISSING_TIME = 0
 FIRE= false
 
 PIVOT_V, PIVOT_H = 0, 0
-SEARCH_RADAR_SW = false
-BALISTIC_CALC = false
-FIRE = false
 
 --[[
 -- MODE:0 -> Stop
@@ -43,8 +40,7 @@ function onTick()
 	SEARCH_RADAR_SW = false
 	BALISTIC_CALC = false
 	FIRE = false
-	local params = {}
-	local q_out = Quaternion:_new()
+	local q_out, params = Quaternion:_new(), {}
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
 	end
@@ -89,13 +85,12 @@ function onTick()
 	end
 	if MODE == 2 then
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-		if isTracking_h and isTracking_v and same and nequal(mass, TARGET_MASS, 0.25) then
+		
+		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
 			local pos = RADAR:getPos()
 			pos[2] = pos[2] + 0.25
-			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-			local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
-			local posout = rotationRadar:_rotateVector(pos)
-			local offset = rotationBase:_rotateVector(OFFSET_TR_G)
+			local rotationRadar, rotationBase = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17]), Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
+			local posout, offset = rotationRadar:_rotateVector(pos), rotationBase:_rotateVector(OFFSET_TR_G)
 			for i = 1, 3 do
 				posout[i] = posout[i] + offset[i]
 			end
@@ -126,13 +121,16 @@ function onTick()
 				}
 				PIVOT_H, PIVOT_V = getAngle(Quaternion:_new(input.getNumber(25), input.getNumber(26), input.getNumber(27),
 				input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
-				if input.getNumber(24) < property.getNumber("MT") then
+				if input.getNumber(24) < property.getNumber("MaxBulletTravelTime") then
 					FIRE = true
 				else
 					FIRE = false
 				end
 			else
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
+			end
+			if math.abs(PIVOT_H) > property.getNumber("MaxYaw") then
+				reset()
 			end
 		else
 			MISSING_TIME = MISSING_TIME + 1
@@ -154,20 +152,14 @@ function onTick()
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
-
+--[[
 function getTilt(tilt, top)
 	if top < 0 then
 		tilt = tilt + tilt / math.abs(tilt) * 0.25
 	end
 	return tilt
 end
-
-function nequal(a, b, eps)
-	local flag = false
-	if a - b < eps then flag = true end
-	return flag
-end
-
+]]
 function addVector(vecBase, vec2, scalar)
 	local vec = { 0, 0, 0 }
 	for i = 1, 3 do

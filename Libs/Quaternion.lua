@@ -46,8 +46,7 @@ Quaternion = {
 	---@return Quaternion
 	_newRotateQuaternion = function(cls, angle, vector)
 		angle = angle / 2
-		local s = math.sin(angle)
-		local norm = math.sqrt(vector[1] ^ 2 + vector[2] ^ 2 + vector[3] ^ 2)
+		local s, norm = math.sin(angle), math.sqrt(vector[1] ^ 2 + vector[2] ^ 2 + vector[3] ^ 2)
 		for i = 1, 3 do
 			vector[i] = vector[i] / norm
 		end
@@ -83,8 +82,7 @@ Quaternion = {
 		pitch = 2 * pitch * math.pi
 		roll = math.asin(math.sin(2 * roll * math.pi)/math.cos(pitch))
 		yaw = -2 * ((yaw + 1.75) % 1 - 0.5) * math.pi
-		local v = {1,0,0}
-		local q = cls:_newRotateQuaternion(yaw, { 0, 1, 0 })--yaw
+		local v, q = {1,0,0}, cls:_newRotateQuaternion(yaw, { 0, 1, 0 })--yaw
 
 		v = q:_rotateVector({0,0,1})
 		q = cls:_newRotateQuaternion(pitch,v):_product(q)--pitch
