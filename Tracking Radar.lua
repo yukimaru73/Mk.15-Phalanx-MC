@@ -5,13 +5,12 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(5, 0.3, 0.2, 0.3)
+PivotPID = PID:new(5, 0.45, 0.2, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
 TARGET_MASS = 0
 MISSING_TIME = 0
-FIRE= false
 
 PIVOT_V, PIVOT_H = 0, 0
 
@@ -48,18 +47,23 @@ function onTick()
 		reset()
 		goto out
 	end
-	local rotationRadar, rotationBase= Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17]),Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
+	rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
+	rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 	if MODE == 0 then
-		SEARCH_RADAR_SW = true
-		PivotPID:reset()
-		if params[21] == 1 then
-			local vec = { params[1], params[2], params[3] }
-			TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
-			local pos = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
-			if math.abs(math.atan(pos[3],pos[1]))/2/math.pi < property.getNumber("MaxYaw")  then
-				MODE = 1
-				RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
+		if MISSING_TIME == 0 then
+			SEARCH_RADAR_SW = true
+			PivotPID:reset()
+			if params[21] == 1 then
+				local vec = { params[1], params[2], params[3] }
+				TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
+				local pos = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
+				if math.abs(math.atan(pos[3], pos[1])) / 2 / math.pi < property.getNumber("MaxYaw") then
+					MODE = 1
+					RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
+				end
 			end
+		else
+			MISSING_TIME = MISSING_TIME - 1
 		end
 	end
 	if MODE == 1 then
@@ -68,7 +72,6 @@ function onTick()
 			TARGET_MASS = mass
 			MODE = 2
 		else
-
 			local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
 			local pospiv = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
@@ -83,10 +86,13 @@ function onTick()
 			end
 		end
 		RADAR:trackingUpdate()
+		if math.abs(PIVOT_H) / 2 / math.pi > property.getNumber("MaxYaw") then
+			reset()
+		end
 	end
 	if MODE == 2 then
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-		
+
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
 			local pos = RADAR:getPos()
 			pos[2] = pos[2] + 0.25
@@ -120,7 +126,7 @@ function onTick()
 					xz * math.sin(input.getNumber(23))
 				}
 				PIVOT_H, PIVOT_V = getAngle(Quaternion:_new(input.getNumber(25), input.getNumber(26), input.getNumber(27),
-				input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
+					input.getNumber(28)):_getConjugateQuaternion():_rotateVector(face))
 				if input.getNumber(24) < property.getNumber("MaxBulletTravelTime") then
 					FIRE = true
 				else
@@ -136,11 +142,11 @@ function onTick()
 			end
 		end
 		RADAR:trackingUpdate()
+		if math.abs(PIVOT_H) / 2 / math.pi > property.getNumber("MaxYaw") then
+			reset()
+		end
 	end
 	::out::
-	if math.abs(PIVOT_H) / 2 / math.pi > property.getNumber("MaxYaw") then
-		reset()
-	end
 	output.setBool(1, BALISTIC_CALC)
 	output.setBool(2, SEARCH_RADAR_SW)
 	output.setBool(10, FIRE)
@@ -152,6 +158,7 @@ function onTick()
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
+
 --[[
 function getTilt(tilt, top)
 	if top < 0 then
@@ -180,7 +187,7 @@ function reset()
 	TARGET_POS = { 0, 0, 0 }
 	TARGET_POS_LIST = {}
 	TARGET_MASS = 0
-	MISSING_TIME = 0
+	MISSING_TIME = 30
 
 	PIVOT_V, PIVOT_H = 0, 0
 	SEARCH_RADAR_SW = false
