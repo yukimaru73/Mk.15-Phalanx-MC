@@ -154,7 +154,7 @@ function onTick()
 	output.setNumber(15, q_out.y)
 	output.setNumber(16, q_out.z)
 	output.setNumber(17, q_out.w)
-
+	debug.log("TST/ "..MODE)
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end

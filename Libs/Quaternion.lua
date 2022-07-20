@@ -1,4 +1,4 @@
-require("LBCopy")
+require("LifeBoatAPI.Utils.LBCopy")
 
 ---@section Quaternion 1 Quaternion  {x,y,z; w}
 ---@class Quaternion
