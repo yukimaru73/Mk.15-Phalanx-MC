@@ -48,15 +48,18 @@ function onTick()
 		reset()
 		goto out
 	end
+	local rotationRadar, rotationBase= Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17]),Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 	if MODE == 0 then
 		SEARCH_RADAR_SW = true
 		PivotPID:reset()
 		if params[21] == 1 then
-			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
-			local vec = { input.getNumber(1), input.getNumber(2), input.getNumber(3) }
+			local vec = { params[1], params[2], params[3] }
 			TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
-			MODE = 1
-			RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
+			local pos = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
+			if math.atan(pos[3],pos[1])/2/math.pi < property.getNumber("MaxYaw")  then
+				MODE = 1
+				RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
+			end
 		end
 	end
 	if MODE == 1 then
@@ -65,8 +68,6 @@ function onTick()
 			TARGET_MASS = mass
 			MODE = 2
 		else
-			local rotationBase = Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
-			local rotationRadar = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17])
 
 			local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
@@ -89,7 +90,6 @@ function onTick()
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
 			local pos = RADAR:getPos()
 			pos[2] = pos[2] + 0.25
-			local rotationRadar, rotationBase = Quaternion:createPitchRollYawQuaternion(params[14], params[15], params[17]), Quaternion:createPitchRollYawQuaternion(params[10], params[11], params[13])
 			local posout, offset = rotationRadar:_rotateVector(pos), rotationBase:_rotateVector(OFFSET_TR_G)
 			for i = 1, 3 do
 				posout[i] = posout[i] + offset[i]
