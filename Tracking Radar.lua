@@ -56,7 +56,7 @@ function onTick()
 			local vec = { params[1], params[2], params[3] }
 			TARGET_POS = rotationRadar:_rotateVector(addVector(vec, OFFSET_TR_G, 5))
 			local pos = rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
-			if math.atan(pos[3],pos[1])/2/math.pi < property.getNumber("MaxYaw")  then
+			if math.abs(math.atan(pos[3],pos[1]))/2/math.pi < property.getNumber("MaxYaw")  then
 				MODE = 1
 				RADAR:setFOV(math.sqrt(vec[1] ^ 2 + vec[2] ^ 2 + vec[3] ^ 2))
 			end
