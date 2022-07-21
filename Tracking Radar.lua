@@ -159,14 +159,14 @@ function onTick()
 	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
 end
 
---[[
+
 function getTilt(tilt, top)
 	if top < 0 then
 		tilt = tilt + tilt / math.abs(tilt) * 0.25
 	end
 	return tilt
 end
-]]
+
 function addVector(vecBase, vec2, scalar)
 	local vec = { 0, 0, 0 }
 	for i = 1, 3 do
