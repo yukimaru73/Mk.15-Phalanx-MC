@@ -5,12 +5,13 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(6, 0.5, 0.3, 0.3)
+PivotPID = PID:new(20, 0.005, 0.3, 0.3)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
 TARGET_MASS = 0
 MISSING_TIME = 0
+MT = 0.37
 
 PIVOT_V, PIVOT_H = 0, 0
 
@@ -39,6 +40,7 @@ function onTick()
 	SEARCH_RADAR_SW = false
 	BALISTIC_CALC = false
 	FIRE = false
+	MT = 0.37
 	local q_out, params = Quaternion:_new(), {}
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
@@ -91,6 +93,7 @@ function onTick()
 		end
 	end
 	if MODE == 2 then
+		
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
 
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
@@ -119,6 +122,9 @@ function onTick()
 			end
 
 			if input.getBool(1) then
+				if MT<0.2 then
+					MT=MT+0.0005
+				end
 				local xz = math.cos(input.getNumber(22))
 				local face = {
 					xz * math.cos(input.getNumber(23)),
@@ -133,6 +139,7 @@ function onTick()
 					FIRE = false
 				end
 			else
+				MT = 0.09
 				PIVOT_H, PIVOT_V = getAngle(rotationBase:_getConjugateQuaternion():_rotateVector(posout))
 			end
 		else
@@ -154,9 +161,9 @@ function onTick()
 	output.setNumber(15, q_out.y)
 	output.setNumber(16, q_out.z)
 	output.setNumber(17, q_out.w)
-	debug.log("TST/ "..MODE)
+	
 	output.setNumber(7, 2 * PIVOT_V / math.pi)
-	output.setNumber(8, PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0))
+	output.setNumber(8, clamp(PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0),MT,-MT))
 end
 
 
@@ -181,6 +188,14 @@ function getAngle(vector)
 	elevation = math.atan(vector[2], math.sqrt(vector[1] ^ 2 + vector[3] ^ 2))
 	return azimuth, elevation
 end
+function clamp(value, max, min)
+	if value < min then
+		value = min
+	elseif value > max then
+		value = max
+	end
+	return value
+end
 
 function reset()
 	MODE = 0
@@ -188,6 +203,7 @@ function reset()
 	TARGET_POS_LIST = {}
 	TARGET_MASS = 0
 	MISSING_TIME = 30
+	MT = 0.37
 
 	PIVOT_V, PIVOT_H = 0, 0
 	SEARCH_RADAR_SW = false
