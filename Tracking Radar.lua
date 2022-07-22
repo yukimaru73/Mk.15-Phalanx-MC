@@ -138,6 +138,7 @@ function onTick()
 			end
 		else
 			MISSING_TIME = MISSING_TIME + 1
+			TARGET_POS_LIST = {}
 			if MISSING_TIME > 60 then
 				reset()
 			end
