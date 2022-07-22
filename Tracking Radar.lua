@@ -94,12 +94,10 @@ function onTick()
 		end
 	end
 	if MODE == 2 then
-		
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.01 then
-			local posout= rotationRadar:_rotateVector(addVector(RADAR:getPos(),OFFSET_TR_G,1))
-			
+			local posout = rotationRadar:_rotateVector(addVector(RADAR:getPos(), OFFSET_TR_G, 1))
+
 			table.insert(TARGET_POS_LIST, 1, posout)
 			if #TARGET_POS_LIST > 5 then
 				table.remove(TARGET_POS_LIST, 6)
@@ -118,8 +116,8 @@ function onTick()
 			end
 
 			if input.getBool(1) then
-				if MT<0.2 then
-					MT=MT+0.003
+				if MT < 0.2 then
+					MT = MT + 0.003
 				end
 				local xz = math.cos(input.getNumber(22))
 				local face = {
@@ -157,11 +155,10 @@ function onTick()
 	output.setNumber(15, q_out.y)
 	output.setNumber(16, q_out.z)
 	output.setNumber(17, q_out.w)
-	
-	output.setNumber(7, 2 * PIVOT_V / math.pi)
-	output.setNumber(8, clamp(PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0),MT,-MT))
-end
 
+	output.setNumber(7, 2 * PIVOT_V / math.pi)
+	output.setNumber(8, clamp(PivotPID:update((PIVOT_H / math.pi / 2 - params[12] + 1.5) % 1 - 0.5, 0), MT, -MT))
+end
 
 function getTilt(tilt, top)
 	if top < 0 then
@@ -184,6 +181,7 @@ function getAngle(vector)
 	elevation = math.atan(vector[2], math.sqrt(vector[1] ^ 2 + vector[3] ^ 2))
 	return azimuth, elevation
 end
+
 function clamp(value, max, min)
 	if value < min then
 		value = min
