@@ -98,13 +98,14 @@ function onTick()
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
 
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
-			local pos = RADAR:getPos()
-			pos[2] = pos[2] + 0.25
+			local pos = addVector(RADAR:getPos(),OFFSET_TR_G,1)
 			local posout, offset = rotationRadar:_rotateVector(pos), rotationBase:_rotateVector(OFFSET_TR_G)
+			posout = addVector(posout, offset, 1)
+			--[[
 			for i = 1, 3 do
 				posout[i] = posout[i] + offset[i]
 			end
-
+			]]
 			table.insert(TARGET_POS_LIST, 1, posout)
 			if #TARGET_POS_LIST > 5 then
 				table.remove(TARGET_POS_LIST, 6)
