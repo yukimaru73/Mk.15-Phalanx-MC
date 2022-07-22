@@ -36,10 +36,10 @@ TrackingRadar = {
 	---@param self TrackingRadar
 	---@return boolean horizontal, boolean vertical, boolean same, number mass
 	isTracking = function(self)
-		local mass_h =input.getNumber(self.ch_in_h)*input.getNumber(self.ch_in_h+2)
-		local mass_v =input.getNumber(self.ch_in_v)*input.getNumber(self.ch_in_v+2)
+		local mass_h = input.getNumber(self.ch_in_h) * input.getNumber(self.ch_in_h + 2)
+		local mass_v = input.getNumber(self.ch_in_v) * input.getNumber(self.ch_in_v + 2)
 
-		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0, (mass_v-mass_h)<0.25 , mass_h
+		return input.getNumber(self.ch_in_h) ~= 0, input.getNumber(self.ch_in_v) ~= 0, (mass_v - mass_h) < 0.25, mass_h
 	end;
 	---@endsection
 
@@ -49,8 +49,8 @@ TrackingRadar = {
 	---@param y number
 	---@param z number
 	setViewFromPos = function(self, x, y, z)
-		output.setNumber(self.ch_out_h, math.atan(z, x)/2/math.pi)
-		output.setNumber(self.ch_out_v, math.atan(y - 0.5, math.sqrt(x ^ 2 + z ^ 2))/2/math.pi)
+		output.setNumber(self.ch_out_h, math.atan(z, x) / 2 / math.pi)
+		output.setNumber(self.ch_out_v, math.atan(y - 0.5, math.sqrt(x ^ 2 + z ^ 2)) / 2 / math.pi)
 	end;
 	---@endsection
 
@@ -69,7 +69,7 @@ TrackingRadar = {
 	---@return table
 	getPos = function(self)
 		local x, y, z, xz, a, ith, itv, pi2
-		a, pi2  = self, math.pi * 2
+		a, pi2   = self, math.pi * 2
 		ith, itv = a:isTracking()
 		if not (ith and itv) then return { 0, 0, 0 } end
 		y = input.getNumber(a.ch_in_h + 2) * math.sin(input.getNumber(a.ch_in_h + 1) * pi2)
