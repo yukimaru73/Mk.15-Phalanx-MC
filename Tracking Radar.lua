@@ -116,7 +116,8 @@ function onTick()
 			end
 
 			if input.getBool(1) then
-				if MT < 0.3 then
+				MISSING_TIME = 0
+				if MT < 0.4 then
 					MT = MT + 0.0045
 				end
 				local xz = math.cos(input.getNumber(22))
