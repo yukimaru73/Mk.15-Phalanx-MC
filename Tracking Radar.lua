@@ -5,7 +5,7 @@ require("Libs.PID")
 
 RADAR = TrackingRadar:new(7, 4, 6, 5, 4)
 OFFSET_TR_G = { 0, 0.25, 0 }
-PivotPID = PID:new(20, 0.005, 0.3, 0.3)
+PivotPID = PID:new(20, 0.005, 0.3, 0.08)
 MODE = 0
 TARGET_POS = { 0, 0, 0 }
 TARGET_POS_LIST = {}
@@ -40,7 +40,6 @@ function onTick()
 	SEARCH_RADAR_SW = false
 	BALISTIC_CALC = false
 	FIRE = false
-	MT = 0.37
 	local q_out, params = Quaternion:_new(), {}
 	for i = 1, 32 do
 		params[i] = input.getNumber(i)
@@ -69,10 +68,12 @@ function onTick()
 		end
 	end
 	if MODE == 1 then
+		MT = 0.42
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
 		if isTracking_h and isTracking_v and same then
 			TARGET_MASS = mass
 			MODE = 2
+			MT = 0.09
 		else
 			local posradar = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
@@ -123,7 +124,7 @@ function onTick()
 
 			if input.getBool(1) then
 				if MT<0.2 then
-					MT=MT+0.0005
+					MT=MT+0.003
 				end
 				local xz = math.cos(input.getNumber(22))
 				local face = {
