@@ -71,11 +71,8 @@ function onTick()
 		if isTracking_h and isTracking_v and same and mass > 50 then
 			TARGET_MASS = mass
 			MODE = 2
-<<<<<<< Updated upstream
-=======
 			MISSING_TIME = 0
 			MT = 0.09
->>>>>>> Stashed changes
 		else
 			local posradar, pospiv = rotationRadar:_getConjugateQuaternion():_rotateVector(TARGET_POS), rotationBase:_getConjugateQuaternion():_rotateVector(TARGET_POS)
 			posradar = addVector(posradar, rotationRadar:_getConjugateQuaternion():_rotateVector(OFFSET_TR_G), -1)
@@ -97,24 +94,12 @@ function onTick()
 	end
 	if MODE == 2 then
 		local isTracking_h, isTracking_v, same, mass = RADAR:isTracking()
-<<<<<<< Updated upstream
-
-		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.25 then
-			local pos = RADAR:getPos()
-			pos[2] = pos[2] + 0.25
-			local posout, offset = rotationRadar:_rotateVector(pos), rotationBase:_rotateVector(OFFSET_TR_G)
-			for i = 1, 3 do
-				posout[i] = posout[i] + offset[i]
-			end
-
-=======
 		if isTracking_h and isTracking_v and same and (mass - TARGET_MASS) < 0.01 then
 			local posout = rotationRadar:_rotateVector(addVector(RADAR:getPos(), OFFSET_TR_G, 1))
 			if math.sqrt(posout[1]^2 + posout[2]^2 + posout[3]^2) < 20 then
 				reset()
 				goto out
 			end
->>>>>>> Stashed changes
 			table.insert(TARGET_POS_LIST, 1, posout)
 			if #TARGET_POS_LIST > 5 then
 				table.remove(TARGET_POS_LIST, 6)
